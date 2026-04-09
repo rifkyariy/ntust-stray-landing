@@ -2,37 +2,20 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { QRCodeSVG } from 'qrcode.react'
 
-// Simple inline QR placeholder — renders a decorative SVG grid pattern that
-// looks like a QR code for demo purposes (no external dependency needed).
 function QRCode({ value, size = 160, color = '#0ea5e9' }: { value: string; size?: number; color?: string }) {
-  // deterministic pseudorandom grid from value string
-  const cells = 21
-  const cell = size / cells
-  const bits: boolean[] = []
-  let h = 5381
-  for (let i = 0; i < value.length; i++) h = ((h << 5) + h) ^ value.charCodeAt(i)
-  for (let i = 0; i < cells * cells; i++) {
-    h = Math.imul(h ^ (h >>> 16), 0x45d9f3b)
-    h ^= h >>> 15
-    bits.push((h & 1) === 1)
-  }
-  // Force corner finder patterns
-  const corner = (r: number, c: number) => (
-    (r < 7 && c < 7) || (r < 7 && c >= cells - 7) || (r >= cells - 7 && c < 7)
-  )
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rounded-lg">
-      <rect width={size} height={size} fill="white" rx="8" />
-      {Array.from({ length: cells }, (_, r) =>
-        Array.from({ length: cells }, (_, c) => {
-          const filled = corner(r, c) ? true : bits[r * cells + c]
-          return filled ? (
-            <rect key={`${r}-${c}`} x={c * cell + 1} y={r * cell + 1} width={cell - 1} height={cell - 1} fill={corner(r,c) ? '#0f1419' : color} rx="1" />
-          ) : null
-        })
-      )}
-    </svg>
+    <div className="rounded-xl overflow-hidden p-3 bg-white inline-block">
+      <QRCodeSVG
+        value={value}
+        size={size}
+        bgColor="#ffffff"
+        fgColor={color}
+        level="M"
+        includeMargin={false}
+      />
+    </div>
   )
 }
 
